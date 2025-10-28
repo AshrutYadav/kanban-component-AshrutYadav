@@ -3,9 +3,15 @@ import KanbanBoard from './KanbanBoard';
 import type { KanbanColumn, KanbanTask } from './KanbanBoard.types';
 import { useState } from 'react';
 
-const meta: Meta<typeof KanbanBoard> = {
+const meta: Meta = {
   title: 'Components/KanbanBoard',
   component: KanbanBoard,
+  argTypes: {
+    columnCount: { control: { type: 'range', min: 1, max: 6, step: 1 }, description: 'Number of columns' },
+    tasksPerColumn: { control: { type: 'range', min: 0, max: 50, step: 5 }, description: 'Tasks per column' },
+    priorityMode: { control: { type: 'select' }, options: ['random', 'none'], description: 'Apply priorities' },
+    darkMode: { control: 'boolean', description: 'Enable dark mode (bonus)' },
+  },
 };
 export default meta;
 
@@ -37,7 +43,7 @@ const makeData = (count = 6, tasksCount = 12) => {
   return { columns, tasks };
 };
 
-type Story = StoryObj<typeof KanbanBoard>;
+type Story = StoryObj;
 
 export const Default: Story = {
   render: () => {
@@ -55,7 +61,7 @@ export const Default: Story = {
   },
 };
 
-export const EmptyState: Story = {
+export const Empty: Story = {
   render: () => {
     const { columns, tasks } = makeData(4, 0);
     return (
@@ -71,7 +77,7 @@ export const EmptyState: Story = {
   },
 };
 
-export const ManyTasks: Story = {
+export const LargeDataset: Story = {
   render: () => {
     const { columns, tasks } = makeData(4, 40);
     return (
@@ -106,11 +112,18 @@ export const DifferentPriorities: Story = {
   },
 };
 
-export const InteractiveDemo: Story = {
-  render: () => {
-    const initial = makeData(4, 16);
+export const InteractivePlayground: Story = {
+  args: { columnCount: 4, tasksPerColumn: 4, priorityMode: 'random', darkMode: false },
+  render: (args: any) => {
+    const initial = makeData(args.columnCount, args.columnCount * args.tasksPerColumn);
     const [columns, setColumns] = useState<KanbanColumn[]>(initial.columns);
     const [tasks, setTasks] = useState<Record<string, KanbanTask>>(initial.tasks);
+
+    if (args.priorityMode === 'none') {
+      Object.values(tasks).forEach((t) => {
+        delete t.priority;
+      });
+    }
 
     const onTaskMove = (taskId: string, fromColumn: string, toColumn: string, newIndex: number) => {
       setColumns((cols) => {
@@ -142,20 +155,45 @@ export const InteractiveDemo: Story = {
       setColumns((cols) => cols.map((c) => ({ ...c, taskIds: c.taskIds.filter((id) => id !== taskId) })));
     };
 
+    const addRandomTask = () => {
+      const cid = columns[Math.floor(Math.random() * columns.length)]?.id;
+      if (!cid) return;
+      const id = Math.random().toString(36).slice(2);
+      const newTask: KanbanTask = {
+        id,
+        title: `New Task ${Object.keys(tasks).length + 1}`,
+        status: cid,
+        createdAt: new Date(),
+        priority: args.priorityMode === 'random' ? (['low', 'medium', 'high', 'urgent'] as const)[Math.floor(Math.random() * 4)] : undefined,
+      };
+      onTaskCreate(cid, newTask);
+    };
+    const removeRandomTask = () => {
+      const all = Object.keys(tasks);
+      const pick = all[0];
+      if (pick) onTaskDelete(pick);
+    };
+
     return (
-      <KanbanBoard
-        columns={columns}
-        tasks={tasks}
-        onTaskMove={onTaskMove}
-        onTaskCreate={onTaskCreate}
-        onTaskUpdate={onTaskUpdate}
-        onTaskDelete={onTaskDelete}
-      />
+      <div className={args.darkMode ? 'dark bg-neutral-900 p-2' : ''}>
+        <div className="mb-2 flex gap-2">
+          <button className="rounded bg-primary-600 px-3 py-1 text-white" onClick={addRandomTask}>Add Task</button>
+          <button className="rounded bg-neutral-200 px-3 py-1" onClick={removeRandomTask}>Remove Task</button>
+        </div>
+        <KanbanBoard
+          columns={columns}
+          tasks={tasks}
+          onTaskMove={onTaskMove}
+          onTaskCreate={onTaskCreate}
+          onTaskUpdate={onTaskUpdate}
+          onTaskDelete={onTaskDelete}
+        />
+      </div>
     );
   },
 };
 
-export const MobileView: Story = {
+export const MobileResponsive: Story = {
   parameters: { viewport: { defaultViewport: 'mobile1' } },
   render: () => {
     const { columns, tasks } = makeData(4, 8);

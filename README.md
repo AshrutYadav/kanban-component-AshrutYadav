@@ -1,73 +1,41 @@
-# React + TypeScript + Vite
+# Kanban Board Component
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Live Storybook
+https://69010c047b006bc5652a8c1a-sbtbisupxt.chromatic.com/
 
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Installation
+```bash
+npm install
+npm run storybook
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Architecture
+- React + TypeScript with Vite.
+- Tailwind CSS with extended design tokens and class-based dark mode.
+- Low-level drag-and-drop via @dnd-kit/core (Pointer + Keyboard sensors) with custom droppable slots for precise insertion.
+- Components: KanbanBoard, KanbanColumn, KanbanCard, TaskModal, primitives (Button, Modal, Avatar).
+- Hooks: useKanbanBoard (example state), useDragAndDrop (internal state utility).
+- Accessibility-first: roles/labels, focus-visible styles, Escape to close modal, keyboard support (more below).
+- Performance: memoization; plan includes virtualization for large columns, debounced filters, lazy-loaded modal.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Features
+- [x] Drag-and-drop tasks
+- [x] Task creation/editing
+- [x] Responsive design
+- [x] Keyboard accessibility (Tab/Shift+Tab, Escape; Arrow/Home/End in progress)
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## Storybook Stories
+- Default board
+- Empty state
+- Large dataset
+- Mobile view
+- Interactive playground
+
+## Technologies
+- React + TypeScript
+- Tailwind CSS
+- Storybook (+ Chromatic)
+- @dnd-kit/core, clsx, date-fns, zustand (optional)
+
+## Contact
+ashrutyadav7@gmail.com
