@@ -19,7 +19,8 @@ function DroppableSlot({ columnId, index }: { columnId: string; index: number })
       ref={setNodeRef}
       data-drop-index={index}
       aria-hidden
-      className={`h-2 rounded bg-transparent transition ${isOver ? 'bg-primary-100' : ''}`}
+      aria-dropeffect="move"
+      className={`my-1 h-4 rounded bg-transparent transition ${isOver ? 'bg-primary-100' : ''}`}
     />
   );
 }

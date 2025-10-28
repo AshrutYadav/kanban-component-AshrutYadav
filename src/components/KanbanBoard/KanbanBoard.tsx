@@ -32,11 +32,21 @@ export default function KanbanBoard({ columns, tasks, onTaskCreate, onTaskDelete
     if (!over) return;
     const activeId = String(active.id);
     const overId = String(over.id);
-    if (!overId.includes('::')) return;
-    const [toColumn, indexStr] = overId.split('::');
-    const newIndex = Number(indexStr);
     const fromColumn = findTaskColumn(activeId);
     if (!fromColumn) return;
+    if (overId.includes('::')) {
+      const [toColumn, indexStr] = overId.split('::');
+      const newIndex = Number(indexStr);
+      onTaskMove(activeId, fromColumn, toColumn, newIndex);
+      return;
+    }
+    // Fallback: dropped over a card (taskId). Insert before that card in its column.
+    const toColumn = findTaskColumn(overId);
+    if (!toColumn) return;
+    const toColumnObj = columns.find((c) => c.id === toColumn);
+    if (!toColumnObj) return;
+    const newIndex = toColumnObj.taskIds.indexOf(overId);
+    if (newIndex < 0) return;
     onTaskMove(activeId, fromColumn, toColumn, newIndex);
   };
 
