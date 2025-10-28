@@ -1,15 +1,15 @@
-import { memo } from 'react';
+import { memo, type ButtonHTMLAttributes } from 'react';
 import type { KanbanTask } from './KanbanBoard.types';
 import { getPriorityColor, isOverdue } from '../../utils/task.utils';
 import Avatar from '../primitives/Avatar';
 
-interface Props {
+type Props = {
   task: KanbanTask;
   onClick: (task: KanbanTask) => void;
   isDragging?: boolean;
-}
+} & ButtonHTMLAttributes<HTMLButtonElement>;
 
-function KanbanCardBase({ task, onClick, isDragging }: Props) {
+function KanbanCardBase({ task, onClick, isDragging, ...rest }: Props) {
   return (
     <button
       role="option"
@@ -17,6 +17,7 @@ function KanbanCardBase({ task, onClick, isDragging }: Props) {
       aria-grabbed={!!isDragging}
       tabIndex={0}
       onClick={() => onClick(task)}
+      {...rest}
       className={`w-full rounded-lg border border-neutral-200 bg-white p-3 text-left shadow-sm transition hover:shadow ${getPriorityColor(
         task.priority ?? 'medium'
       )}`}

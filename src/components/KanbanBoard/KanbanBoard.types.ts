@@ -25,4 +25,6 @@ export interface KanbanViewProps {
   onTaskCreate: (columnId: string, task: KanbanTask) => void;
   onTaskUpdate: (taskId: string, updates: Partial<KanbanTask>) => void;
   onTaskDelete: (taskId: string) => void;
+  onColumnUpdate?: (columnId: string, updates: Partial<KanbanColumn>) => void;
+  onColumnDelete?: (columnId: string) => void;
 }
