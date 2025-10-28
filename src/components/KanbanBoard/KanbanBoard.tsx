@@ -1,0 +1,79 @@
+import { useMemo, useState } from 'react';
+import {
+  DndContext,
+  closestCenter,
+  useSensor,
+  useSensors,
+  PointerSensor,
+  KeyboardSensor,
+  type DragEndEvent,
+} from '@dnd-kit/core';
+import type { KanbanViewProps, KanbanTask } from './KanbanBoard.types';
+import KanbanColumn from './KanbanColumn';
+import TaskModal from './TaskModal';
+
+export default function KanbanBoard({ columns, tasks, onTaskCreate, onTaskDelete, onTaskMove, onTaskUpdate }: KanbanViewProps) {
+  const [openTask, setOpenTask] = useState<KanbanTask | null>(null);
+
+  const columnsWithTasks = useMemo(
+    () => columns.map((c) => ({ column: c, tasks: c.taskIds.map((id) => tasks[id]).filter(Boolean) })),
+    [columns, tasks]
+  );
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),
+    useSensor(KeyboardSensor)
+  );
+
+  const findTaskColumn = (taskId: string) => columns.find((c) => c.taskIds.includes(taskId))?.id ?? null;
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over) return;
+    const activeId = String(active.id);
+    const overId = String(over.id);
+    if (!overId.includes('::')) return;
+    const [toColumn, indexStr] = overId.split('::');
+    const newIndex = Number(indexStr);
+    const fromColumn = findTaskColumn(activeId);
+    if (!fromColumn) return;
+    onTaskMove(activeId, fromColumn, toColumn, newIndex);
+  };
+
+  return (
+    <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+      <div
+        role="application"
+        aria-roledescription="kanban board"
+        className="flex h-[80vh] gap-3 overflow-x-auto px-3 py-2"
+      >
+        {columnsWithTasks.map(({ column, tasks: colTasks }) => (
+          <KanbanColumn
+            key={column.id}
+            column={column}
+            tasks={colTasks}
+            onAdd={(cid) =>
+              onTaskCreate(cid, {
+                id: Math.random().toString(36).slice(2),
+                title: 'New Task',
+                status: cid,
+                createdAt: new Date(),
+              })
+            }
+            onOpen={setOpenTask}
+          />
+        ))}
+        <TaskModal
+          open={!!openTask}
+          task={openTask}
+          onClose={() => setOpenTask(null)}
+          onSave={onTaskUpdate}
+          onDelete={(id) => {
+            onTaskDelete(id);
+            setOpenTask(null);
+          }}
+        />
+      </div>
+    </DndContext>
+  );
+}
