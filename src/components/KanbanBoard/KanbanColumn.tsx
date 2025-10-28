@@ -31,7 +31,7 @@ function DraggableCard({ task, onOpen }: { task: KanbanTask; onOpen: (t: KanbanT
     : undefined;
   return (
     <div ref={setNodeRef} style={style} {...listeners} {...attributes}>
-      <KanbanCard task={task} onClick={onOpen} />
+      <KanbanCard task={task} onOpen={onOpen} />
       {isDragging && <div className="mt-[-100%] h-0" aria-hidden />}
     </div>
   );
@@ -76,7 +76,7 @@ function KanbanColumnBase({ column, tasks, onAdd, onOpen }: Props) {
     <section
       role="listbox"
       aria-label={column.title}
-      className="flex h-full w-[300px] shrink-0 flex-col rounded-xl bg-neutral-50 ring-1 ring-neutral-200"
+      className="flex h-full w-[260px] shrink-0 snap-start flex-col rounded-xl bg-neutral-50 ring-1 ring-neutral-200 sm:w-[300px] md:w-[320px]"
     >
       <header className="sticky top-0 z-10 flex items-center justify-between gap-2 bg-neutral-50 p-3">
         <h3 className="font-semibold text-neutral-900">{column.title}</h3>

@@ -5,18 +5,18 @@ import Avatar from '../primitives/Avatar';
 
 type Props = {
   task: KanbanTask;
-  onClick: (task: KanbanTask) => void;
+  onOpen: (task: KanbanTask) => void;
   isDragging?: boolean;
 } & ButtonHTMLAttributes<HTMLButtonElement>;
 
-function KanbanCardBase({ task, onClick, isDragging, ...rest }: Props) {
+function KanbanCardBase({ task, onOpen, isDragging, ...rest }: Props) {
   return (
     <button
       role="option"
       aria-label={task.title}
       aria-grabbed={!!isDragging}
       tabIndex={0}
-      onClick={() => onClick(task)}
+      onClick={() => onOpen(task)}
       {...rest}
       className={`w-full rounded-lg border border-neutral-200 bg-white p-3 text-left shadow-sm transition hover:shadow ${getPriorityColor(
         task.priority ?? 'medium'
