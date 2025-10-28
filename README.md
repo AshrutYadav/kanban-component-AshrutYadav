@@ -1,7 +1,7 @@
 # Kanban Board Component
 
 ## Live Storybook
-https://69010c047b006bc5652a8c1a-sbtbisupxt.chromatic.com/
+https://69010c047b006bc5652a8c1a-doxxlnnxuw.chromatic.com/
 
 ## Installation
 ```bash
